@@ -17,6 +17,8 @@ python main.py /path/to/mnist/data
 I got a 96.30% test accuracy, 97.61% training accuracy and final loss around 0.0772 on my laptop. 
 It took about 20 minutes to complete.
 
+![](loss_curve.png)
+
 ## Requirements
 * NumPy
 * SciPy (for MaxPool2d)
