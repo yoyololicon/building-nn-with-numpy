@@ -82,7 +82,7 @@ print("Accuracy on test data: %.2f" % (accuracy_score(test_labels, y) * 100))
 
 loss_history = np.array(loss_history)
 cum_loss = np.cumsum(np.pad(np.array(loss_history), (10, 10), 'edge'))
-moving_avg_loss = (cum_loss[11:] - cum_loss[:-11]) / 11
+moving_avg_loss = (cum_loss[21:] - cum_loss[:-21]) / 21
 plt.plot(loss_history, label='original loss')
 plt.plot(moving_avg_loss, label='smoothed loss')
 plt.ylabel('cross entropy')
