@@ -210,7 +210,8 @@ class MaxPool2d(_module):
         d0, d1 = self.dilation
         k0, k1 = self.kernel_size
         s0, s1 = self.stride
-        new_shape = x.shape[:2] + _conv_shape(x.shape[2:], (k0, k1), self.stride, 0, self.dilation) + self.kernel_size
+        new_shape = x.shape[:2] + _conv_shape(x.shape[2:], self.kernel_size, self.stride, 0,
+                                              self.dilation) + self.kernel_size
 
         new_stride = x.strides[:2] + \
                      (x.strides[2] * s0, x.strides[3] * s1, x.strides[2] * d0, x.strides[3] * d1)
@@ -262,7 +263,7 @@ class Conv2d(_module):
         grad_weight = y_grad.swapaxes(0, 1)
 
         w_grad = conv2d(x, grad_weight, stride=self.dilation, padding=self.padding, dilation=self.stride,
-                        output_shape=self.weight.shape[2:]).swapaxes(0, 1)
+                        output_shape=self.kernel_size).swapaxes(0, 1)
         self.weight.backward(w_grad)
         b_grad = y_grad.sum((0, 2, 3))
         self.bias.backward(b_grad)
@@ -291,7 +292,7 @@ def cross_entropy_loss(logits, target):
     max_logits = logits.max(1, keepdims=True)
     logits = logits - max_logits
     logsoftmax = logits - np.log(np.exp(logits).sum(1, keepdims=True))
-    loss = -logsoftmax[np.arange(batch), target].sum()
+    loss = -np.take_along_axis(logsoftmax, target[:, None], 1).sum()
     grad = np.exp(logsoftmax)
     grad[np.arange(batch), target] -= 1
     loss /= batch
