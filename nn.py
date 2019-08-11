@@ -103,7 +103,7 @@ def conv2d(x, weight, bias=None, stride=1, padding=0, dilation=1, output_shape=N
     return y if bias is None else y + bias[:, None, None]
 
 
-def transpoe_conv2d(x, weight, bias=None, stride=1, padding=0, dilation=1, output_padding=0):
+def transpose_conv2d(x, weight, bias=None, stride=1, padding=0, dilation=1, output_padding=0):
     s0, s1 = _make_pair(stride)
     d0, d1 = _make_pair(dilation)
     padding = _make_pair(padding)
@@ -125,7 +125,7 @@ def transpoe_conv2d(x, weight, bias=None, stride=1, padding=0, dilation=1, outpu
     y = conv2d(x, weight, bias,
                padding=((k0 - 1) * d0 - padding[0], (k1 - 1) * d1 - padding[1]), dilation=dilation)
 
-    return y if bias is None else y + bias
+    return y
 
 
 def _conv_shape(shape, k, s, p, d):
@@ -271,7 +271,7 @@ class Conv2d(_module):
         new_shape = _transposeconv_shape(y_grad.shape[-2:], self.kernel_size, self.stride, self.padding, self.dilation)
         output_padding = (self.input_ref.shape[2] - new_shape[0], self.input_ref.shape[3] - new_shape[1])
 
-        x_grad = transpoe_conv2d(y_grad, self.weight, stride=self.stride, padding=self.padding, dilation=self.dilation,
+        x_grad = transpose_conv2d(y_grad, self.weight, stride=self.stride, padding=self.padding, dilation=self.dilation,
                                  output_padding=output_padding)
         return x_grad
 
